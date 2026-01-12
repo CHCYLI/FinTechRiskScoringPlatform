@@ -1,0 +1,23 @@
+{
+  "schema_version": "v1",
+  "features": [
+    {"name": "age", "type": "int", "min": 18, "max": 100, "required": true},
+    {"name": "income", "type": "float", "min": 0, "max": 500000, "required": true},
+    {"name": "employment_length", "type": "float", "min": 0, "max": 50, "required": true},
+
+    {"name": "dti", "type": "float", "min": 0, "max": 3, "required": true},
+    {"name": "utilization", "type": "float", "min": 0, "max": 1.5, "required": true},
+
+    {"name": "delinquencies", "type": "int", "min": 0, "max": 20, "required": true},
+    {"name": "history_length", "type": "float", "min": 0, "max": 40, "required": true},
+
+    {"name": "tx_30d_count", "type": "int", "min": 0, "max": 5000, "required": true},
+    {"name": "refund_rate_30d", "type": "float", "min": 0, "max": 1, "required": true},
+    {"name": "active_days_30d", "type": "int", "min": 0, "max": 30, "required": true}
+  ],
+  "segments": {
+    "channel": ["organic", "paid_ads", "partner"],
+    "region": ["NE", "SE", "MW", "W"],
+    "product": ["card", "installment", "bnpl"]
+  }
+}
