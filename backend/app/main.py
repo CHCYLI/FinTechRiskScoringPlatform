@@ -1,18 +1,25 @@
+import logging
+
 from fastapi import FastAPI
-from app.core.config import settings
-from app.core.logging import setup_logging
+
 from app.api.v1.router import router as v1_router
+from app.core.config import get_settings
+from app.core.logging import setup_logging
 
-def create_app() -> FastAPI:
-    setup_logging(settings.log_level)
+settings = get_settings()
+setup_logging(settings.log_level)
 
-    app = FastAPI(
-        title=settings.app_name,
-        version="0.0.1",
-    )
+logger = logging.getLogger("app")
 
-    app.include_router(v1_router)
+app = FastAPI(
+    title=settings.app_name,
+    version="0.1.0",
+)
 
-    return app
+app.include_router(v1_router)
 
-app = create_app()
+
+@app.on_event("startup")
+def on_startup():
+    logger.info("API starting up...")
+    logger.info("env=%s schema=%s", settings.app_env, settings.feature_schema_path)

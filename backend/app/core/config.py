@@ -1,43 +1,57 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from __future__ import annotations
+
+from functools import lru_cache
 from pathlib import Path
 from typing import List
 
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# backend/app/core/config.py -> parents[2] == backend/
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+
 
 class Settings(BaseSettings):
-    app_name: str = Field(default="RiskScoringPlatform", alias="APP_NAME")
-    app_env: str = Field(default="dev", alias="APP_ENV")
+    """
+    Full settings for later phases (2+),
+    but safe to use starting from Phase 1.
+    """
 
-    
-    
-    # ✅ 关键：extra="ignore" -> .env 里多余键不会导致崩溃
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(BACKEND_DIR / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
     # =========================
+    # Basic
+    # =========================
+    app_name: str = Field(default="RiskScoringPlatform", alias="APP_NAME")
+    app_env: str = Field(default="dev", alias="APP_ENV")
+
+    # =========================
     # Environment / logging
     # =========================
-    app_env: str = Field(default="dev", alias="APP_ENV")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
     # =========================
-    # API Server (match your .env)
+    # API Server
     # =========================
     api_host: str = Field(default="0.0.0.0", alias="API_HOST")
     api_port: int = Field(default=8000, alias="API_PORT")
 
     # =========================
-    # Model artifacts (match your .env)
+    # Model artifacts
     # =========================
-    model_dir: str = Field(default="app/ml/artifacts", alias="MODEL_DIR")
+    model_dir: Path = Field(
+        default=BACKEND_DIR / "app" / "ml" / "artifacts",
+        alias="MODEL_DIR",
+    )
     model_file: str = Field(default="model.joblib", alias="MODEL_FILE")
     metadata_file: str = Field(default="metadata.json", alias="METADATA_FILE")
 
-    feature_schema_path: str = Field(
-        default="app/ml/feature_schema.json",
+    feature_schema_path: Path = Field(
+        default=BACKEND_DIR / "app" / "ml" / "feature_schema.json",
         alias="FEATURE_SCHEMA_PATH",
     )
 
@@ -64,7 +78,7 @@ class Settings(BaseSettings):
     cors_origins: str = Field(default="http://localhost:5173", alias="CORS_ORIGINS")
 
     # =========================
-    # Auth (optional, match your .env)
+    # Auth (optional)
     # =========================
     enable_auth: bool = Field(default=False, alias="ENABLE_AUTH")
     jwt_expire_minutes: int = Field(default=60, alias="JWT_EXPIRE_MINUTES")
@@ -72,22 +86,24 @@ class Settings(BaseSettings):
     # =========================
     # Portfolio (optional)
     # =========================
-    portfolio_data_path: str = Field(
-        default="app/ml/data/portfolio_sample.csv",
+    portfolio_data_path: Path = Field(
+        default=BACKEND_DIR / "app" / "ml" / "data" / "portfolio_sample.csv",
         alias="PORTFOLIO_DATA_PATH",
     )
 
     # -------- derived paths --------
     @property
-    def model_path(self) -> str:
-        return str(Path(self.model_dir) / self.model_file)
+    def model_path(self) -> Path:
+        return self.model_dir / self.model_file
 
     @property
-    def metadata_path(self) -> str:
-        return str(Path(self.model_dir) / self.metadata_file)
+    def metadata_path(self) -> Path:
+        return self.model_dir / self.metadata_file
 
     def cors_origin_list(self) -> List[str]:
         return [x.strip() for x in self.cors_origins.split(",") if x.strip()]
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
