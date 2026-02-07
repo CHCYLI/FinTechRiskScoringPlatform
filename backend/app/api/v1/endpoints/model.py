@@ -1,26 +1,39 @@
-import json
-from fastapi import APIRouter
-from app.core.config import get_settings
+"""
+GET /v1/model/version
 
-router = APIRouter()
+Phase 2 behavior:
+- If metadata exists: return version info from metadata.json
+- If not trained: return "untrained" + artifact_dir
+"""
+
+from __future__ import annotations
+
+from fastapi import APIRouter
+
+from app.core.artifact_loader import get_artifact_dir, load_metadata
+
+router = APIRouter(tags=["model"])
+
 
 @router.get("/model/version")
-def model_version():
-    settings = get_settings()
-    meta_path = settings.metadata_path
+def get_model_version():
+    meta = load_metadata()
+    if meta is None:
+        return {
+            "status": "untrained",
+            "artifact_dir": str(get_artifact_dir()),
+            "detail": "No artifacts found. Run ml/train.py to generate model.joblib and metadata.json.",
+        }
 
-    payload = {
-        "model_version": "untrained",
-        "model_path": str(settings.model_path),
-        "metadata_path": str(meta_path),
-        "app_env": settings.app_env,
+    return {
+        "status": "ok",
+        "model_name": meta.get("model_name"),
+        "version": meta.get("version"),
+        "trained_at": meta.get("trained_at"),
+        "feature_schema_sha256": meta.get("feature_schema_sha256"),
+        "features": meta.get("features", []),
+        "segments": meta.get("segments", []),
+        "thresholds": meta.get("thresholds", {}),
+        "artifact_dir": str(get_artifact_dir()),
+        "artifact_files": meta.get("artifact_files", {}),
     }
-
-    if meta_path.exists():
-        try:
-            payload["metadata"] = json.loads(meta_path.read_text(encoding="utf-8"))
-            payload["model_version"] = payload["metadata"].get("model_version", "unknown")
-        except Exception as e:
-            payload["metadata_error"] = str(e)
-
-    return payload
