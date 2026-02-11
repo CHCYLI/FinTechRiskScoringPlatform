@@ -1,3 +1,4 @@
+# backend/app/api/v1/endpoints/model.py
 """
 GET /v1/model/version
 

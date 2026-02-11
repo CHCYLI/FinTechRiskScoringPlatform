@@ -3,12 +3,12 @@ from app.core.schema_loader import load_feature_schema
 
 
 class Applicant(BaseModel):
-    # --- segments: 用于 portfolio 切片（也可进模型，但 MVP 先当分组字段）
+    # --- segments: for portfolio split
     channel: str = Field(..., description="Acquisition channel")
     region: str = Field(..., description="Region bucket")
     product: str = Field(..., description="Product type")
 
-    # --- features: 用于模型评分
+    # --- features: for model to give score
     age: int = Field(..., ge=18, le=100)
     income: float = Field(..., ge=0, le=500000)
     employment_length: float = Field(..., ge=0, le=50)

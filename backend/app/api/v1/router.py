@@ -1,19 +1,29 @@
 # backend/app/api/v1/router.py
+"""
+v1 router aggregator.
+
+This file wires together all v1 endpoints so main.py can do:
+app.include_router(api_router, prefix="/v1")
+"""
 
 from fastapi import APIRouter
 
 from app.api.v1.endpoints.health import router as health_router
-from app.api.v1.endpoints.model import router as model_router
 from app.api.v1.endpoints.schema import router as schema_router
 from app.api.v1.endpoints.validate import router as validate_router
+from app.api.v1.endpoints.model import router as model_router
 
+# NEW in Phase 2
 from app.api.v1.endpoints.metrics import router as metrics_router
 
-router = APIRouter(prefix="/v1")
+api_router = APIRouter()
 
-router.include_router(health_router, tags=["health"])
-router.include_router(model_router, tags=["model"])
-router.include_router(schema_router, tags=["schema"])
-router.include_router(validate_router, tags=["validate"])
+# Phase 1 endpoints
+api_router.include_router(health_router)
+api_router.include_router(schema_router)
+api_router.include_router(validate_router)
+api_router.include_router(model_router)
 
-router.include_router(metrics_router, tags=["model"])
+# Phase 2 endpoint
+api_router.include_router(metrics_router)
+
