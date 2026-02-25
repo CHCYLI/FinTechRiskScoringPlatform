@@ -1,0 +1,57 @@
+{
+  "model_name": "logreg_baseline",
+  "version": "v0.2.0",
+  "trained_at": "2026-02-25T16:59:05.830481+00:00",
+  "feature_schema_sha256": "e90beaa578878968ab8c685faa953538b167308312c5e31e861f6afbc328124f",
+  "features": [
+    "age",
+    "income",
+    "employment_length",
+    "dti",
+    "utilization",
+    "delinquencies",
+    "history_length",
+    "tx_30d_count",
+    "refund_rate_30d",
+    "active_days_30d"
+  ],
+  "segments": [
+    "channel",
+    "region",
+    "product"
+  ],
+  "metrics": {
+    "val": {
+      "roc_auc": 0.6505222287311172,
+      "pr_auc": 0.19318416862451207,
+      "ks": 0.22680197215616282,
+      "recall_at_fpr_0.050": 0.12127894156560089
+    },
+    "test": {
+      "roc_auc": 0.637615218171824,
+      "pr_auc": 0.1906059360944376,
+      "ks": 0.20294636103809305,
+      "recall_at_fpr_0.050": 0.12017640573318633
+    }
+  },
+  "data_info": {
+    "n_rows": 50000,
+    "default_rate": 0.12096,
+    "split": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    },
+    "seed": 42,
+    "data_path": "E:\\risk-scoring-platform\\ml\\data\\processed\\train.csv",
+    "target": "default"
+  },
+  "thresholds": {
+    "approve": 0.3,
+    "reject": 0.4
+  },
+  "artifact_files": {
+    "model": "model.joblib",
+    "metadata": "metadata.json"
+  }
+}

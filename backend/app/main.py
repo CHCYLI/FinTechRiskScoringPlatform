@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1.router import router as v1_router
+from app.api.v1.router import api_router as v1_router
 from app.core.config import get_settings
 from app.core.logging import setup_logging
 
