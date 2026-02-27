@@ -5,8 +5,8 @@ Generate synthetic consumer-credit style data from feature_schema.json.
 
 Why this exists (Phase 2):
 - Phase 2 needs a reproducible data snapshot to train a baseline PD model.
-- We generate data aligned with your Phase 1 "data contract" (feature_schema.json)
-  so the rest of the platform doesn't change when you later swap in real datasets.
+- We generate data aligned with Phase 1 "data contract" (feature_schema.json)
+  so the rest of the platform doesn't change when later swap in real datasets.
 
 Output:
 - A CSV file with all features + segment fields + target column: `default` (0/1).
