@@ -1,0 +1,131 @@
+{
+  "phase": "2.5",
+  "dataset": "loans_full_schema (LendingClub)",
+  "raw_path": "ml\\data\\raw\\loans_full_schema.csv",
+  "schema_path": "backend/app/ml/feature_schema.json",
+  "processed_path": "ml\\data\\processed\\train_real.csv",
+  "seed": 42,
+  "label_mode": "include_current_as_good",
+  "rows": 9933,
+  "pos_rate": 0.01117487163998792,
+  "numeric_features": [
+    "age",
+    "income",
+    "employment_length",
+    "dti",
+    "utilization",
+    "delinquencies",
+    "history_length",
+    "tx_30d_count",
+    "refund_rate_30d",
+    "active_days_30d"
+  ],
+  "segments": [
+    "channel",
+    "region",
+    "product"
+  ],
+  "columns": [
+    "age",
+    "income",
+    "employment_length",
+    "dti",
+    "utilization",
+    "delinquencies",
+    "history_length",
+    "tx_30d_count",
+    "refund_rate_30d",
+    "active_days_30d",
+    "channel",
+    "region",
+    "product",
+    "default"
+  ],
+  "mapping_notes": {
+    "dataset": "loans_full_schema (LendingClub)",
+    "label_notes": {
+      "label_mode": "include_current_as_good",
+      "good_statuses": [
+        "Fully Paid",
+        "Current"
+      ],
+      "bad_statuses": [
+        "Charged Off",
+        "Default",
+        "*Late*"
+      ],
+      "dropped_statuses_sample": [
+        "In Grace Period"
+      ]
+    },
+    "feature_notes": {
+      "age": {
+        "kind": "default",
+        "value": 0.0,
+        "reason": "no matching raw column"
+      },
+      "income": {
+        "kind": "mapped",
+        "source": "annual_income_joint->annual_income"
+      },
+      "employment_length": {
+        "kind": "mapped",
+        "source": "emp_length"
+      },
+      "dti": {
+        "kind": "mapped",
+        "source": "debt_to_income_joint->debt_to_income"
+      },
+      "utilization": {
+        "kind": "computed",
+        "source": "total_credit_utilized/total_credit_limit"
+      },
+      "delinquencies": {
+        "kind": "mapped",
+        "source": "delinq_2y"
+      },
+      "history_length": {
+        "kind": "computed",
+        "source": "issue_year - earliest_credit_line"
+      },
+      "tx_30d_count": {
+        "kind": "default",
+        "value": 10
+      },
+      "refund_rate_30d": {
+        "kind": "default",
+        "value": 0.0
+      },
+      "active_days_30d": {
+        "kind": "default",
+        "value": 20
+      }
+    },
+    "segment_notes": {
+      "channel": {
+        "source": "initial_listing_status",
+        "allowed_used": false
+      },
+      "region": {
+        "source": "state",
+        "allowed_used": false
+      },
+      "product": {
+        "source": "loan_purpose",
+        "allowed_used": false
+      }
+    },
+    "used_numeric_features": [
+      "age",
+      "income",
+      "employment_length",
+      "dti",
+      "utilization",
+      "delinquencies",
+      "history_length",
+      "tx_30d_count",
+      "refund_rate_30d",
+      "active_days_30d"
+    ]
+  }
+}
