@@ -16,6 +16,9 @@ from app.api.v1.endpoints.model import router as model_router
 # NEW in Phase 2
 from app.api.v1.endpoints.metrics import router as metrics_router
 
+# NEW in Phase 3
+from app.api.v1.endpoints.score import router as score_router
+
 api_router = APIRouter()
 
 # Phase 1 endpoints
@@ -26,4 +29,7 @@ api_router.include_router(model_router)
 
 # Phase 2 endpoint
 api_router.include_router(metrics_router)
+
+# Phase 3 endpoint
+api_router.include_router(score_router, tags=["scoring"])
 
