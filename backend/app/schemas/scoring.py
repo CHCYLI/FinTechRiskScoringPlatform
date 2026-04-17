@@ -1,5 +1,5 @@
 # backend/app/schemas/scoring.py
-from typing import Literal, List, Optional
+from typing import Literal, List
 from pydantic import BaseModel
 
 
