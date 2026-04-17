@@ -116,8 +116,8 @@ def main():
     seg_cols = schema_segments(schema)
 
     report = {
-        "phase": "2.5",
-        "dataset": "loans_full_schema (LendingClub)",
+        "phase": "4",
+        "dataset": "loans_full_schema from LendingClub",
         "raw_path": str(Path(args.raw)),
         "schema_path": args.schema,
         "processed_path": str(out_path),
