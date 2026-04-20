@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # backend/app/core/config.py -> parents[2] == backend/
 BACKEND_DIR = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = BACKEND_DIR.parent
 
 
 class Settings(BaseSettings):
@@ -87,9 +88,17 @@ class Settings(BaseSettings):
     # Portfolio (optional)
     # =========================
     portfolio_data_path: Path = Field(
-        default=BACKEND_DIR / "app" / "ml" / "data" / "portfolio_sample.csv",
+        default=PROJECT_ROOT / "ml" / "data" / "processed" / "train_real.csv",
         alias="PORTFOLIO_DATA_PATH",
     )
+
+    @field_validator("model_dir", "feature_schema_path", "portfolio_data_path", mode="before")
+    @classmethod
+    def _resolve_relative_paths(cls, v: Any) -> Path:
+        path = Path(v)
+        if path.is_absolute():
+            return path
+        return (BACKEND_DIR / path).resolve()
 
     # -------- derived paths --------
     @property
