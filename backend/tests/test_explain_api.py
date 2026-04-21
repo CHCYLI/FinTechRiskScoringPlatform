@@ -27,4 +27,6 @@ def test_explain_endpoint_ok():
     assert "model_version" in data
     assert "top_features" in data
     assert "reasons" in data
-    assert len(data["reasons"]) >= 1
+    assert len(data["top_features"]) == len(data["reasons"])
+    assert len(data["top_features"]) == 3
+    assert len(data["reasons"]) == 3
