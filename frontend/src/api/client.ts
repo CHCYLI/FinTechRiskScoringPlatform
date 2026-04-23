@@ -13,7 +13,7 @@ const baseURL = envBase.endsWith("/v1") ? envBase : `${envBase}/v1`;
 
 const api = axios.create({
   baseURL,
-  timeout: 10000
+  timeout: 20000
 });
 
 export async function fetchModelVersion(): Promise<ModelVersionResponse> {

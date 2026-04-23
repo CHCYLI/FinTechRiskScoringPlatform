@@ -19,12 +19,23 @@ export default function ApplicantScoringPage() {
     try {
       setSubmitting(true);
       setError("");
-      const [score, explain] = await Promise.all([
-        scoreApplicant(values),
-        explainApplicant(values)
-      ]);
+      setScoreResult(null);
+      setExplainResult(null);
+
+      const score = await scoreApplicant(values);
       setScoreResult(score);
-      setExplainResult(explain);
+
+      try {
+        const explain = await explainApplicant(values);
+        setExplainResult(explain);
+      } catch (err) {
+        console.error("Explain failed:", err);
+        setExplainResult({
+          model_version: score.model_version,
+          top_features: [],
+          reasons: ["Explanation unavailable for this request"]
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Scoring failed");
       setScoreResult(null);

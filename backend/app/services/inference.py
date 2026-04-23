@@ -104,6 +104,53 @@ def decide(pd_value: float, approve_th: float, reject_th: float) -> str:
     return "Review"
 
 
+def apply_policy_overrides(applicant: Dict[str, Any], model_decision: str) -> str:
+    """
+    Simple business guardrails for MVP.
+    These rules are intentionally lightweight and easy to explain in demo/interviews.
+    """
+    income = applicant.get("income")
+    delinquencies = applicant.get("delinquencies")
+    utilization = applicant.get("utilization")
+    history_length = applicant.get("history_length")
+
+    try:
+        income = float(income) if income is not None else None
+    except (TypeError, ValueError):
+        income = None
+
+    try:
+        delinquencies = float(delinquencies) if delinquencies is not None else None
+    except (TypeError, ValueError):
+        delinquencies = None
+
+    try:
+        utilization = float(utilization) if utilization is not None else None
+    except (TypeError, ValueError):
+        utilization = None
+
+    try:
+        history_length = float(history_length) if history_length is not None else None
+    except (TypeError, ValueError):
+        history_length = None
+
+    # Rule 1: extremely low income should not auto-approve
+    if income is not None and income < 1000:
+        return "Review" if model_decision == "Approve" else model_decision
+
+    # Rule 2: very high utilization + any delinquency => reject
+    if utilization is not None and delinquencies is not None:
+        if utilization >= 0.95 and delinquencies >= 1:
+            return "Reject"
+
+    # Rule 3: very short credit history + repeated delinquencies => at least review
+    if history_length is not None and delinquencies is not None:
+        if history_length < 0.5 and delinquencies >= 2:
+            return "Review" if model_decision == "Approve" else model_decision
+
+    return model_decision
+
+
 def score_one(applicant: Dict[str, Any]) -> Dict[str, Any]:
     bundle = get_model_bundle()
 
@@ -112,10 +159,12 @@ def score_one(applicant: Dict[str, Any]) -> Dict[str, Any]:
     X = applicant_to_df(applicant, bundle)
     proba = bundle.model.predict_proba(X)
     pd_value = float(proba[0][1])  # probability of class 1 (default)
+    model_decision = decide(pd_value, approve_th, reject_th)
+    final_decision = apply_policy_overrides(applicant, model_decision)
 
     return {
         "pd": pd_value,
-        "decision": decide(pd_value, approve_th, reject_th),
+        "decision": final_decision,
         "model_version": str(bundle.metadata.get("version", "unknown")),
         "thresholds": thresholds,
     }
@@ -137,7 +186,9 @@ def score_batch(applicants: List[Dict[str, Any]]) -> Dict[str, Any]:
     results = []
     for i, p in enumerate(probas):
         p = float(p)
-        results.append({"index": i, "pd": p, "decision": decide(p, approve_th, reject_th)})
+        model_decision = decide(p, approve_th, reject_th)
+        final_decision = apply_policy_overrides(applicants[i], model_decision)
+        results.append({"index": i, "pd": p, "decision": final_decision})
 
     return {
         "model_version": str(bundle.metadata.get("version", "unknown")),
