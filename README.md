@@ -1,110 +1,135 @@
 # FinTech Risk Scoring Platform
 
-## Overview
+An end-to-end FinTech risk scoring product prototype with:
 
-An end-to-end FinTech risk scoring platform prototype that provides real-time probability-of-default (PD) predictions, batch scoring, explainability (SHAP), portfolio analytics, and threshold policy simulation — built with production-style architecture.
+- Real-time PD scoring
+- Policy decision layer (Approve / Review / Reject)
+- Explainability output
+- Portfolio analytics by region/channel/product
+- FastAPI backend + React frontend + Docker support
 
-**Note:** This project is currently a work-in-progress prototype. Not all features are fully implemented or tested.
+## Demo Flow
 
-## Features
+1. Open Applicant Scoring page.
+2. Modify applicant inputs.
+3. Click `Score Applicant`.
+4. Review:
+   - PD (probability of default)
+   - Decision (Approve / Review / Reject)
+   - Explainability reasons
+5. Go to Portfolio page.
+6. Switch `group by` region/channel/product.
+7. Observe risk distribution and portfolio metrics.
 
-- **Real-time PD Scoring**: API endpoint for scoring individual applicants
-- **Batch Scoring**: Process multiple applications in bulk
-- **Model Explainability**: SHAP-based explanations for predictions
-- **Portfolio Analytics**: Aggregate risk metrics and visualizations
-- **Threshold Policy Simulation**: Test different approval thresholds
-- **Data Validation**: Input validation and schema enforcement
-- **Health Monitoring**: System health checks and metrics
+## Quick Start (Recommended: Docker)
 
-## Architecture
+### 1. Clone the repo
 
-The platform consists of three main components:
+```bash
+git clone https://github.com/yourname/risk-scoring-platform.git
+cd risk-scoring-platform
+```
 
-- **Backend**: FastAPI-based REST API server
-- **Frontend**: Web interface (under development)
-- **ML Pipeline**: Model training, evaluation, and artifact management
+### 2. Start services
 
-### Backend Structure
+```bash
+docker compose up --build
+```
 
-- `app/main.py`: Application entry point
-- `app/api/v1/`: API routes and endpoints
-- `app/core/`: Core utilities (config, logging, schema loading)
-- `app/ml/`: ML artifacts and feature schema
-- `app/schemas/`: Pydantic models for data validation
+If your machine uses the old command:
 
-### ML Pipeline
+```bash
+docker-compose up --build
+```
 
-- `ml/train.py`: Model training script
-- `ml/evaluate.py`: Model evaluation
-- `ml/prepare_realdata.py`: Data preprocessing
-- `data/`: Raw and processed datasets
+### 3. Open in browser
 
-## Prerequisites
+- Frontend: `http://localhost:5173`
+- Backend API docs: `http://localhost:8000/docs`
 
-- Python 3.8+
-- Docker and Docker Compose (for containerized deployment)
-- Git
+## Local Development
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd risk-scoring-platform
-   ```
-
-2. Set up the backend environment:
-   ```bash
-   cd backend
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-3. (Optional) Use Docker Compose for full setup:
-   ```bash
-   docker-compose up --build
-   ```
-
-## Usage
-
-### Running the Backend
+### Backend
 
 ```bash
 cd backend
-./run.sh
+python -m venv .venv
+source .venv/bin/activate   # Windows (PowerShell): .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-The API will be available at `http://localhost:8000`
-
-### API Endpoints
-
-- `GET /health`: Health check
-- `GET /metrics`: System metrics
-- `POST /v1/score`: Score a single application
-- `POST /v1/batch-score`: Batch scoring
-- `POST /v1/validate`: Validate application data
-- `GET /v1/schema`: Get application schema
-
-### Training the Model
+### Frontend
 
 ```bash
-cd ml
-python train.py
+cd frontend
+npm install
+npm run dev
 ```
 
-## Development
+### URLs
 
-### Project Structure
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8000`
+- API docs: `http://localhost:8000/docs`
 
+## Test API
+
+### Score an applicant
+
+```bash
+curl -X POST http://127.0.0.1:8000/v1/score \
+  -H "Content-Type: application/json" \
+  -d '{
+    "age": 35,
+    "income": 65000,
+    "employment_length": 5,
+    "dti": 0.25,
+    "utilization": 0.45,
+    "delinquencies": 0,
+    "history_length": 8,
+    "tx_30d_count": 40,
+    "refund_rate_30d": 0.02,
+    "active_days_30d": 18,
+    "channel": "online",
+    "region": "NE",
+    "product": "pl"
+  }'
 ```
+
+## Environment Variables
+
+The frontend uses `VITE_API_BASE_URL`.
+
+1. Copy `.env.example` to `frontend/.env`.
+2. Update the value if your backend is not running on `localhost:8000`.
+
+Example:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/v1
+```
+
+## Useful API Endpoints
+
+- `GET /v1/health`
+- `GET /v1/model/version`
+- `GET /v1/metrics`
+- `POST /v1/score`
+- `POST /v1/score/batch`
+- `POST /v1/explain`
+- `GET /v1/portfolio/summary?group_by=region`
+
+## Project Structure
+
+```text
 risk-scoring-platform/
-├── backend/          # FastAPI backend
-├── frontend/         # Frontend application
-├── ml/              # ML pipeline
-├── scripts/         # Utility scripts
-├── docker-compose.yml
-└── README.md
+|- backend/            # FastAPI backend
+|- frontend/           # React + Vite frontend
+|- ml/                 # Training and data scripts
+|- scripts/            # Utility scripts
+|- docker-compose.yml
+`- README.md
 ```
 
 
