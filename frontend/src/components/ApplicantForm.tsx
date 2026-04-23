@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import type { ApplicantInput } from "../api/types";
 import { CHANNEL_OPTIONS, PRODUCT_OPTIONS, REGION_OPTIONS } from "../lib/constants";
 

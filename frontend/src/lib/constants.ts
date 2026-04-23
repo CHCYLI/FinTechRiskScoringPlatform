@@ -1,4 +1,4 @@
-﻿import type { ApplicantInput } from "../api/types";
+import type { ApplicantInput } from "../api/types";
 
 export const NAV_ITEMS = [
   { label: "Overview", path: "/" },

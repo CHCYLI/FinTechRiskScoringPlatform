@@ -1,4 +1,4 @@
-﻿import { PORTFOLIO_GROUP_OPTIONS } from "../lib/constants";
+import { PORTFOLIO_GROUP_OPTIONS } from "../lib/constants";
 
 interface Props {
   value: string;

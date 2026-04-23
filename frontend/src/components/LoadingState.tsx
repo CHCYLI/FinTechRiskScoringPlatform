@@ -1,3 +1,3 @@
-﻿export default function LoadingState() {
+export default function LoadingState() {
   return <div className="state-card">Loading...</div>;
 }

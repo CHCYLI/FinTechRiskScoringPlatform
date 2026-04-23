@@ -1,4 +1,4 @@
-﻿import type { ScoreResponse } from "../api/types";
+import type { ScoreResponse } from "../api/types";
 import { formatPercent } from "../lib/format";
 import DecisionBadge from "./DecisionBadge";
 

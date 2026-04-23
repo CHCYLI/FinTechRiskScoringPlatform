@@ -1,4 +1,4 @@
-﻿import type { PortfolioRow } from "../api/types";
+import type { PortfolioRow } from "../api/types";
 import { formatPercent } from "../lib/format";
 
 interface Props {

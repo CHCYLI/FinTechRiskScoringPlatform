@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchMetrics, fetchModelVersion } from "../api/client";
 import type { MetricsResponse, ModelVersionResponse } from "../api/types";
 import ErrorState from "../components/ErrorState";

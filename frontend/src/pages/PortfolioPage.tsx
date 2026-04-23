@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchPortfolioSummary } from "../api/client";
 import type { PortfolioSummaryResponse } from "../api/types";
 import EmptyState from "../components/EmptyState";

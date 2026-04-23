@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { explainApplicant, scoreApplicant } from "../api/client";
 import type { ApplicantInput, ExplainResponse, ScoreResponse } from "../api/types";
 import ApplicantForm from "../components/ApplicantForm";

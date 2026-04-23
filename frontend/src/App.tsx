@@ -1,4 +1,4 @@
-﻿import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import ApplicantScoringPage from "./pages/ApplicantScoringPage";
 import OverviewPage from "./pages/OverviewPage";

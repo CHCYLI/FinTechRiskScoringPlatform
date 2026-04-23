@@ -1,4 +1,4 @@
-﻿export type Decision = "Approve" | "Review" | "Reject";
+export type Decision = "Approve" | "Review" | "Reject";
 
 export interface ApplicantInput {
   age: number;

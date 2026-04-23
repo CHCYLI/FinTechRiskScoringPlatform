@@ -1,4 +1,4 @@
-﻿import type { Decision } from "../api/types";
+import type { Decision } from "../api/types";
 
 interface Props {
   decision: Decision;
