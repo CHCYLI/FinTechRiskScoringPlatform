@@ -120,6 +120,34 @@ VITE_API_BASE_URL=http://localhost:8000/v1
 - `POST /v1/explain`
 - `GET /v1/portfolio/summary?group_by=region`
 
+## Model Validation / Overfitting Check
+
+Run training with a fixed split:
+
+```bash
+python ml/train.py \
+  --data ml/data/processed/train.csv \
+  --schema backend/app/ml/feature_schema.json \
+  --out backend/app/ml/artifacts \
+  --version v0.4.0 \
+  --seed 42 \
+  --target default \
+  --fixed_fpr 0.05
+```
+
+The script writes:
+
+- `metrics.train / metrics.val / metrics.test` (ROC-AUC, PR-AUC, KS, optional Recall@FPR)
+- `overfit_check.roc_auc_gap_train_val`
+- `overfit_check.pr_auc_gap_train_val`
+- `overfit_check.*_status` (`ok`, `watch`, `high_risk`)
+
+Quick interpretation:
+
+- Train much higher than Val/Test => likely overfitting
+- Train/Val/Test close => generalization is acceptable
+- All three low => likely underfitting or weak signal
+
 ## Project Structure
 
 ```text

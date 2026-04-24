@@ -55,6 +55,17 @@ if str(_THIS_DIR) not in sys.path:
 from evaluate import compute_metrics  # noqa: E402
 
 
+def overfit_status(gap: float, warn: float = 0.03, high: float = 0.07) -> str:
+    """
+    Categorize train-vs-validation gap for quick overfitting triage.
+    """
+    if gap >= high:
+        return "high_risk"
+    if gap >= warn:
+        return "watch"
+    return "ok"
+
+
 def read_schema(schema_path: Path) -> Tuple[List[str], List[str]]:
     """
     Parse feature_schema.json and return:
@@ -189,11 +200,22 @@ def main() -> None:
     pipeline.fit(X_train, y_train)
 
     # ---- Predict PD and evaluate ----
+    train_pd = pipeline.predict_proba(X_train)[:, 1]
     val_pd = pipeline.predict_proba(X_val)[:, 1]
     test_pd = pipeline.predict_proba(X_test)[:, 1]
 
+    metrics_train = compute_metrics(y_train, train_pd, fixed_fpr=args.fixed_fpr)
     metrics_val = compute_metrics(y_val, val_pd, fixed_fpr=args.fixed_fpr)
     metrics_test = compute_metrics(y_test, test_pd, fixed_fpr=args.fixed_fpr)
+
+    roc_auc_gap_train_val = float(metrics_train["roc_auc"] - metrics_val["roc_auc"])
+    pr_auc_gap_train_val = float(metrics_train["pr_auc"] - metrics_val["pr_auc"])
+    overfit_check = {
+        "roc_auc_gap_train_val": roc_auc_gap_train_val,
+        "pr_auc_gap_train_val": pr_auc_gap_train_val,
+        "roc_auc_status": overfit_status(roc_auc_gap_train_val),
+        "pr_auc_status": overfit_status(pr_auc_gap_train_val),
+    }
 
     # ---- Write artifacts ----
     model_file = out_dir / "model.joblib"
@@ -217,9 +239,11 @@ def main() -> None:
 
         # Store metrics by split
         "metrics": {
+            "train": metrics_train,
             "val": metrics_val,
             "test": metrics_test,
         },
+        "overfit_check": overfit_check,
 
         # Dataset snapshot info for reproducibility
         "data_info": {
@@ -247,8 +271,10 @@ def main() -> None:
 
     print(f"[train] model saved to: {model_file}")
     print(f"[train] metadata saved to: {metadata_file}")
+    print(f"[train] train metrics: {metrics_train}")
     print(f"[train] val metrics: {metrics_val}")
     print(f"[train] test metrics: {metrics_test}")
+    print(f"[train] overfit check: {overfit_check}")
 
 
 if __name__ == "__main__":
