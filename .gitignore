@@ -1,4 +1,4 @@
 .env
 backend/.env
 frontend/.env
-ml/data/raw/
+ml/data/raw/ 
